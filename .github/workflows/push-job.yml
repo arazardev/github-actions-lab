@@ -20,10 +20,10 @@ on:
           - production
           - staging
         default: 'production'
-  discrete_step:
-          description: 'Motivo del despliegue / Rollback'
-          required: false
-          default: 'Manual trigger or Rollback'
+discrete_step:
+        description: 'Motivo del despliegue / Rollback'
+        required: false
+        default: 'Manual trigger or Rollback'
 
 jobs:
   deploy:
