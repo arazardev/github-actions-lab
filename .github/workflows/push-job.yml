@@ -1,29 +1,42 @@
-name: Run on Push
+name: Deploy Application
 
-# Evento que dispara el workflow
 on:
+  # Despliegue automático al hacer push
   push:
     branches:
-      - main     # Se ejecuta cuando haces push a la rama main
-      # - master # Descomenta si usas 'master' en lugar de 'main'
+      - main
+
+  # Despliegue manual (permite elegir rama, commit o tag)
+  workflow_dispatch:
+    inputs:
+      target_ref:
+        description: 'Rama, Tag o Commit SHA a desplegar'
+        required: true
+        default: 'main'
+      environment:
+        description: 'Entorno de destino'
+        type: choice
+        options:
+          - production
+          - staging
+        default: 'production'
+  discrete_step:
+          description: 'Motivo del despliegue / Rollback'
+          required: false
+          default: 'Manual trigger or Rollback'
 
 jobs:
-  mi-primer-job:
-    name: Ejecutar tareas en Runner Local
-    runs-on: self-hosted # Usará tu runner local en lugar de los servidores de GitHub
+  deploy:
+    runs-on: self-hosted # Tu agente detrás del firewall
 
     steps:
-      # Paso 1: Descarga el código del repositorio en la máquina donde corre el runner
       - name: Checkout del código
         uses: actions/checkout@v4
+        with:
+          # Si se dispara manualmente usa el input, si es automático usa la rama del push
+          ref: ${{ github.event.inputs.target_ref || github.ref }}
 
-      # Paso 2: Ejecuta comandos directamente en el sistema operativo de tu runner
-      - name: Probar entorno
+      - name: Desplegar aplicación
         run: |
-          echo "¡Push detectado correctamente!"
-          echo "Ejecutando en el host: $(hostname)"
-          echo "Directorio actual: $(pwd)"
-
-      # Paso 3: Ejemplo de ejecución de comandos (puedes cambiarlos según lo que necesites)
-      - name: Verificar archivos
-        run: ls -la
+          echo "Desplegando la versión: ${{ github.event.inputs.target_ref || github.ref }}" >> app.log
+          # Aquí van tus comandos de despliegue (docker compose up, systemctl restart, etc.) 
