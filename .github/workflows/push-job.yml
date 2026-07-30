@@ -14,29 +14,28 @@ on:
         required: true
         default: 'main'
       environment:
-        description: 'Entorno de destino'
         type: choice
+        description: 'Entorno de destino'
         options:
           - production
           - staging
         default: 'production'
-discrete_step:
+      reason:
         description: 'Motivo del despliegue / Rollback'
         required: false
         default: 'Manual trigger or Rollback'
 
 jobs:
   deploy:
-    runs-on: self-hosted # Tu agente detrás del firewall
+    runs-on: self-hosted
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
         with:
-          # Si se dispara manualmente usa el input, si es automático usa la rama del push
           ref: ${{ github.event.inputs.target_ref || github.ref }}
 
       - name: Desplegar aplicación
         run: |
-          echo "Desplegando la versión: ${{ github.event.inputs.target_ref || github.ref }}" >> app.log
-          # Aquí van tus comandos de despliegue (docker compose up, systemctl restart, etc.) 
+          echo "Desplegando versión: ${{ github.event.inputs.target_ref || github.ref }}" >> app.log
+          echo "Motivo: ${{ github.event.inputs.reason }}" >> app.log
