@@ -1,0 +1,29 @@
+name: Run on Push
+
+# Evento que dispara el workflow
+on:
+  push:
+    branches:
+      - main     # Se ejecuta cuando haces push a la rama main
+      # - master # Descomenta si usas 'master' en lugar de 'main'
+
+jobs:
+  mi-primer-job:
+    name: Ejecutar tareas en Runner Local
+    runs-on: self-hosted # Usará tu runner local en lugar de los servidores de GitHub
+
+    steps:
+      # Paso 1: Descarga el código del repositorio en la máquina donde corre el runner
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Paso 2: Ejecuta comandos directamente en el sistema operativo de tu runner
+      - name: Probar entorno
+        run: |
+          echo "¡Push detectado correctamente!"
+          echo "Ejecutando en el host: $(hostname)"
+          echo "Directorio actual: $(pwd)"
+
+      # Paso 3: Ejemplo de ejecución de comandos (puedes cambiarlos según lo que necesites)
+      - name: Verificar archivos
+        run: ls -la
